@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react'
 import './asset/style.css';
 import axios from 'axios';
 import { WiDaySunny, WiCloudy, WiRain, WiFog, WiSnow } from 'react-icons/wi';
+import { GoAlert } from "react-icons/go";
+
 
 import Info from './Info';
 
@@ -12,20 +14,39 @@ function Hava2() {
     const [info, setInfo] = useState([]);
     const [city, setCity] = useState(""); // içi boş bir strng olması için çift tırnak yazıyoruz
     const [state, setState] = useState(false);
-    useEffect(() => console.log(city), [city]);  // eğer boş bırakılırsa bir kere değişşikliği yapar, anlık güncelleme için state i yazmak gerek
-    // const [info, setInfo] = useState([]);
+    const [alertNoCity, setAlertNoCity] = useState(false);
+
+    //?  eğer boş bırakılırsa bir kere değişşikliği yapar, anlık güncelleme için state i yazmak gerek
+    // useEffect(() => console.log(city), [city]);
 
 
 
     const handleChange = async () => {
         const apiKey = "a6751d101ed729954638c0e4cc669f0e";
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=tr`;
-        await axios(url).then(response => setInfo(response.data));
-        console.log(info);
-        setState(true);
 
 
-    }
+        try {
+            const response = await axios(url);
+            if (response.data.cod === 200) {
+                setInfo(response.data);
+                setState(true);
+            } else {
+                setAlertNoCity(true);
+            }
+        } catch (error) {
+            setAlertNoCity(true);
+
+        }
+    };
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setAlertNoCity(false);
+        }, 5000);
+
+        return () => clearTimeout(timeoutId);
+    }, [alertNoCity]);
 
 
 
@@ -56,7 +77,15 @@ function Hava2() {
                     </div>
 
                     <div className="info col-10 col-lg-6">
+
+                        <div className="popup-alert">
+                            {alertNoCity && (<div className="alert alert-danger d-flex justify-content-center" role="alert">
+                                <div className='text-center'><GoAlert />   Aradığınız şehir bulunamıyor. Kontrol edip tekrar deneyiniz.</div>
+                            </div>)}
+                        </div>
                         <Info info={info} state={state}></Info>
+
+
                     </div>
                 </div>
             </div>
