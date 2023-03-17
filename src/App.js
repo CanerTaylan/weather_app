@@ -8,7 +8,7 @@ import { GoAlert } from "react-icons/go";
 import Info from './Component/Info';
 
 
-function Weather() {
+function App() {
     const [info, setInfo] = useState([]);
     const [city, setCity] = useState(""); // içi boş bir strng olması için çift tırnak yazıyoruz
     const [state, setState] = useState(false);
@@ -91,4 +91,4 @@ function Weather() {
     )
 }
 
-export default Weather
+export default App
